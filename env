@@ -1,0 +1,68 @@
+#image owner org
+export org=puffincreek
+
+#image versions
+export app_version=1.0-SNAPSHOT
+export postgres_alpine_version=9.6-alpine
+
+#variables for port mapping.
+export docker_port=8080
+
+export postgres_docker_port=5432
+export postgres_host_port=15432
+
+export config_host_port=15000
+export config_host_debug_port=25000
+
+export enterprise_host_port=15001
+export enterprise_host_debug_port=25001
+
+export identity_host_port=15002
+export identity_host_debug_port=25002
+
+#spring profiles to use in dockered environment
+export active_profiles=docker
+
+#configuration server can use a file system where configuration git repo is cloned into.
+export docker_config_mount_point=/vault
+export config_clone_dir=~/github/vault.dev
+
+#logs, db files etc are at variable data (see FHS - File System hierarchy Standards), lets map that to local data and logs.
+export variable_data_dir=/var/opt/${org}
+export host_data_dir=${variable_data_dir}/data
+export host_logs_dir=${variable_data_dir}/logs
+export docker_logs_mountpoint=/var/opt/${org}/logs
+
+#postgres db.
+export POSTGRES_DB=docker
+export POSTGRES_USER=docker
+export POSTGRES_PASSWORD=docker
+export postgres_data_mount_point=/var/lib/postgresql/data
+
+#various images
+export postgres=postgres:${postgres_alpine_version}
+export config=${org}/config:${app_version}
+export enterprise=${org}/enterprise:${app_version}
+export identity=${org}/identity:${app_version}
+
+#A sleep delay before dockerize kicks in (cant use health check option since that continues probing at a frequncy even after start)
+export initial_delay_in_seconds=10
+export CMD_SLEEP=sleep' '${initial_delay_in_seconds}
+
+#various waits for dockerize
+export health_endpoint=actuator/health
+export wait_on_db=-wait' 'tcp://postgres:${postgres_docker_port}
+export wait_on_config=-wait' 'http://config:${docker_port}/${health_endpoint}
+export wait_timeout=-timeout' '60s
+
+#dockerize options
+export WAIT_FOR_CONFIG=dockerize' '${wait_timeout}' '${wait_on_config}
+export WAIT_FOR_CONFIG_AND_DB=dockerize' '${wait_timeout}' '${wait_on_config}' '${wait_on_db}
+
+#debug options
+export docker_debug_port=5005
+export debug_opts=-agentlib:jdwp=transport=dt_socket,server=y,address=${docker_debug_port}
+
+#java options
+export JAVA_OPTS=-Xms64m' '-Xmx128m' '-Dspring.profiles.active=${active_profiles}
+export JAVA_DEBUG_OPTS=${JAVA_OPTS}' '${debug_opts}

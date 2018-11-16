@@ -1,0 +1,6 @@
+. ./env
+
+if [ -d ${variable_data_dir} ]; then
+  sudo rm -rf ${variable_data_dir}/logs
+  sudo rm -rf ${variable_data_dir}/data
+fi

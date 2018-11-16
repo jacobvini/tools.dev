@@ -1,0 +1,10 @@
+. ./env
+
+#make sure the variable data directory exists. If not create and change owner to ${current user}:${current user's group}.
+if [ ! -d ${variable_data_dir} ]; then
+  sudo mkdir -p ${variable_data_dir}/logs
+  sudo mkdir -p ${variable_data_dir}/data
+  sudo chown -R `whoami`:`id -g -n` ${variable_data_dir}
+fi
+
+docker-compose up -d

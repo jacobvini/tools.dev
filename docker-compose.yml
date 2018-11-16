@@ -1,0 +1,50 @@
+# if any server need to be debugged, replace JAVA_OPTS with JAVA_DEBUG_OPTS and 
+# use the application specific debug port listed in env. 
+# Take care not to checkin with debug options.
+version: '3.5'
+services:
+  postgres:
+    image: ${postgres}
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - ${postgres_host_port}:${postgres_docker_port}
+    volumes:
+      - ${host_data_dir}:${postgres_data_mount_point}
+  
+  config:
+    image: ${config}
+    environment:
+      JAVA_OPTS: ${JAVA_OPTS}
+    ports:
+      - ${config_host_port}:${docker_port}
+      - ${config_host_debug_port}:${docker_debug_port}      
+    volumes:
+      - ${config_clone_dir}:${docker_config_mount_point}
+      - ${host_logs_dir}:${docker_logs_mountpoint}
+  
+  enterprise:
+    image: ${enterprise}
+    environment:
+      CMD_SLEEP: ${CMD_SLEEP}
+      JAVA_OPTS: ${JAVA_OPTS}
+      WAIT_FOR_CONFIG_AND_DB: ${WAIT_FOR_CONFIG_AND_DB}
+    ports:
+      - ${enterprise_host_port}:${docker_port}
+      - ${enterprise_host_debug_port}:${docker_debug_port}
+    volumes:
+      - ${host_logs_dir}:${docker_logs_mountpoint}
+
+  identity:
+    image: ${identity}
+    environment:
+      CMD_SLEEP: ${CMD_SLEEP}
+      JAVA_OPTS: ${JAVA_OPTS}
+      WAIT_FOR_CONFIG_AND_DB: ${WAIT_FOR_CONFIG_AND_DB}
+    ports:
+      - ${identity_host_port}:${docker_port}
+      - ${identity_host_debug_port}:${docker_debug_port}
+    volumes:
+      - ${host_logs_dir}:${docker_logs_mountpoint}
