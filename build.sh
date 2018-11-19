@@ -7,6 +7,7 @@ declare -a modules=(
     "reverse-engineering"
     "core-domain"
     "core-rest"
+    "core-jdbc"
     "config"
     "gateway"
     "enterprise"
