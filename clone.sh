@@ -13,6 +13,7 @@ declare -a repos=(
     "git@github.com:puffincreek/gateway.git"
     "git@github.com:puffincreek/core-rest.git"
     "git@github.com:puffincreek/core-domain.git"
+    "git@github.com:puffincreek/core-security.git"
 )
 
 declare -A results
