@@ -13,19 +13,31 @@ declare -a repos=(
     "git@github.com:puffincreek/gateway.git"
     "git@github.com:puffincreek/core-rest.git"
     "git@github.com:puffincreek/core-domain.git"
-    "git@github.com:puffincreek/core-security.git"
+    "git@github.com:puffincreek/core-security.git"	
 )
 
 declare -A results
 pushd ..
 
 for repo in "${repos[@]}"
-do	
-    git clone ${repo}        
-	if [ "$?" -eq 0 ];
-		then results[${repo}]="SUCCESS"; 
-		else results[${repo}]="FAILURE"; break; 
-	fi
+do
+	repoTail=${repo##*\/}
+	dirName=${repoTail%.git}
+	if [ -d "$dirName" ]; then
+  		cd $dirName
+		git pull
+		if [ "$?" -eq 0 ];
+			then results[${repo}]="SUCCESS"; 
+			else results[${repo}]="FAILURE"; break; 
+		fi
+		pushd ..		
+		else
+			git clone ${repo}
+			if [ "$?" -eq 0 ];
+				then results[${repo}]="SUCCESS"; 
+				else results[${repo}]="FAILURE"; break; 
+			fi
+		fi	
 done
 
 popd
